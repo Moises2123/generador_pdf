@@ -92,25 +92,25 @@
             margin-top: 10px;
             text-align: center;
         }
-        
+
         /* Nuevos estilos para la sección de agregar miembros */
         .nuevo-miembro {
             display: flex;
             gap: 10px;
             margin-bottom: 10px;
         }
-        
+
         .nuevo-miembro input {
             flex-grow: 1;
             margin-bottom: 0;
         }
-        
+
         .btn-agregar {
             margin: 0;
             width: auto;
             padding: 8px 15px;
         }
-        
+
         .lista-miembros {
             margin-top: 15px;
             max-height: 200px;
@@ -119,7 +119,7 @@
             border-radius: 4px;
             padding: 10px;
         }
-        
+
         .miembro-item {
             display: flex;
             justify-content: space-between;
@@ -127,11 +127,11 @@
             padding: 5px 0;
             border-bottom: 1px solid #eee;
         }
-        
+
         .miembro-item:last-child {
             border-bottom: none;
         }
-        
+
         .btn-eliminar {
             background-color: #d9534f;
             color: white;
@@ -143,11 +143,11 @@
             margin: 0;
             width: auto;
         }
-        
+
         .btn-eliminar:hover {
             background-color: #c9302c;
         }
-        
+
         .seccion-miembros {
             margin-top: 20px;
             border-top: 1px solid #eee;
@@ -156,7 +156,7 @@
     </style>
 </head>
 <body>
-    <form action="/generar_documento" method="post" target="_blank">
+    <form id="generar-form" action="/generar_documento" method="post" target="_blank">
         <label for="nombre_postulante">Nombre del Postulante:</label><br>
         <input type="text" id="nombre_postulante" name="nombre_postulante" required><br><br>
 
@@ -246,6 +246,34 @@
                 
                 container.appendChild(div);
             }
+
+            // Interceptar el envío del formulario para abrir en nueva pestaña
+            document.getElementById('generar-form').addEventListener('submit', function(event) {
+                event.preventDefault(); // Evitar el envío normal del formulario
+
+                const form = this;
+                const formData = new FormData(form);
+
+                // Crear un nuevo formulario y configurarlo para POST y target _blank
+                const newForm = document.createElement('form');
+                newForm.method = 'post';
+                newForm.action = form.action;  // Usa la misma acción del formulario original
+                newForm.target = '_blank';    // Abre en una nueva pestaña
+
+                // Agregar los campos del formulario original al nuevo formulario
+                formData.forEach((value, key) => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';  // Campo oculto
+                    input.name = key;
+                    input.value = value;
+                    newForm.appendChild(input);
+                });
+
+                // Agregar el nuevo formulario al DOM y enviarlo
+                document.body.appendChild(newForm);
+                newForm.submit();
+                document.body.removeChild(newForm); // Limpiar el formulario después de enviarlo
+            });
         });
     </script>
 </body>
