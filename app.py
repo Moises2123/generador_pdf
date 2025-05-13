@@ -1,7 +1,7 @@
-# app.py
-from flask import Flask, request, send_file, render_template, abort, redirect, url_for, session
+from flask import Flask, request, send_file, render_template, abort, redirect, url_for, session, make_response
 from generar_pdf import generar_documento
 import os
+import io
 
 app = Flask(__name__)
 app.secret_key = 'clave_secreta'  # Necesaria para usar session
@@ -23,34 +23,34 @@ def index():
 @app.route("/agregar_integrante", methods=["POST"])
 def agregar_integrante():
     nuevo_integrante = request.form.get("nuevo_integrante")
-    
+
     if not nuevo_integrante:
         return "El nombre del integrante no puede estar vacío", 400
-    
+
     # Obtener la lista actual de integrantes (de sesión o predeterminada)
     integrantes = session.get('integrantes_personalizados', INTEGRANTES_COMITE.copy())
-    
+
     # Verificar si ya existe
     if nuevo_integrante not in integrantes:
         integrantes.append(nuevo_integrante)
         session['integrantes_personalizados'] = integrantes
-    
+
     return redirect(url_for('index'))
 
 @app.route("/eliminar_integrante", methods=["POST"])
 def eliminar_integrante():
     integrante = request.form.get("integrante")
-    
+
     if not integrante:
         return "Debes especificar el integrante a eliminar", 400
-    
+
     # Obtener la lista actual y eliminar el integrante
     integrantes = session.get('integrantes_personalizados', INTEGRANTES_COMITE.copy())
-    
+
     if integrante in integrantes:
         integrantes.remove(integrante)
         session['integrantes_personalizados'] = integrantes
-    
+
     return redirect(url_for('index'))
 
 @app.route("/generar_documento", methods=["POST"])
@@ -63,8 +63,16 @@ def generar_documento_route():
 
     try:
         archivo_pdf = generar_documento(nombre_postulante, seleccionados)
-        session['pdf_path'] = archivo_pdf
-        return redirect(url_for('descargar_pdf'))  # <--- Redirige directamente al PDF
+        # Leer el contenido del archivo PDF
+        with open(archivo_pdf, 'rb') as pdf_file:
+            pdf_content = pdf_file.read()
+        os.remove(archivo_pdf)  # Borrar el archivo después de leerlo
+
+        # Crear una respuesta de Flask con el PDF
+        response = make_response(pdf_content)
+        response.headers['Content-Type'] = 'application/pdf'
+        response.headers['Content-Disposition'] = 'inline; filename="documento.pdf"' # <-- Esto es importante
+        return response
     except Exception as e:
         return f"Error al generar el PDF: {str(e)}", 500
 
