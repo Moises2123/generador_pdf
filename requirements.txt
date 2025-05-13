@@ -1,0 +1,5 @@
+flask
+reportlab
+textwrap3
+gunicorn
+win32print

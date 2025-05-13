@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Generar Documento</title>
+    <style>
+        /* Estilos básicos para el formulario */
+        body {
+            font-family: sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        form {
+            background-color: #fff;
+            margin: 20px auto;
+            width: 500px;
+            padding: 20px;
+            border: 1px solid #a80b0b;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #a80b0b;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button[type="submit"] {
+            background-color: #a80b0b;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            display: block;
+            margin: 20px auto 0 auto; /* Centrar el botón */
+            width: 200px; /* Ancho del botón */
+        }
+
+        button[type="submit"]:hover {
+            background-color: #a80b0b;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .checkbox-group label {
+            display: inline-flex;
+            align-items: center;
+            margin-bottom: 0;
+            font-weight: normal;
+            color: #555;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            margin-right: 5px;
+        }
+
+        .error-message {
+            color: red;
+            margin-top: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <form action="/generar_documento" method="post">
+        <label for="nombre_postulante">Nombre del Postulante:</label><br>
+        <input type="text" id="nombre_postulante" name="nombre_postulante" required><br><br>
+
+        <p>Selecciona a 3 integrantes del comité:</p>
+        {% for integrante in [
+            "Abg. Andrea del Pilar Chuquipiondo Sánchez",
+            "Lic. Adm. Gilda Eloisa Hidalgo Chávez",
+            "Lic. Adm. Rosa Elena Pérez de Mori",
+            "Presidente. Reynaldo Elías Cajamarca Porras"
+        ] %}
+            <input type="checkbox" name="integrantes" value="{{ integrante }}"> {{ integrante }}<br>
+        {% endfor %}
+
+        <br>
+        <button type="submit">Generar PDF</button>
+    </form>
+
+    <br><br>
+ 
+</body>
+</html>
