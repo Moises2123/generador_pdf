@@ -48,7 +48,7 @@
             box-sizing: border-box;
         }
 
-        button[type="submit"] {
+        button {
             background-color: #a80b0b;
             color: white;
             padding: 10px 20px;
@@ -56,12 +56,12 @@
             border-radius: 4px;
             cursor: pointer;
             display: block;
-            margin: 20px auto 0 auto; /* Centrar el botón */
+            margin: 10px auto;
             width: 200px; /* Ancho del botón */
         }
 
-        button[type="submit"]:hover {
-            background-color: #a80b0b;
+        button:hover {
+            background-color: #870909;
         }
 
         .form-group {
@@ -92,28 +92,161 @@
             margin-top: 10px;
             text-align: center;
         }
+        
+        /* Nuevos estilos para la sección de agregar miembros */
+        .nuevo-miembro {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .nuevo-miembro input {
+            flex-grow: 1;
+            margin-bottom: 0;
+        }
+        
+        .btn-agregar {
+            margin: 0;
+            width: auto;
+            padding: 8px 15px;
+        }
+        
+        .lista-miembros {
+            margin-top: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+        }
+        
+        .miembro-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .miembro-item:last-child {
+            border-bottom: none;
+        }
+        
+        .btn-eliminar {
+            background-color: #d9534f;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 2px 8px;
+            cursor: pointer;
+            font-size: 12px;
+            margin: 0;
+            width: auto;
+        }
+        
+        .btn-eliminar:hover {
+            background-color: #c9302c;
+        }
+        
+        .seccion-miembros {
+            margin-top: 20px;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
     </style>
 </head>
 <body>
-    <form action="/generar_documento" method="post">
+    <form action="/generar_documento" method="post" target="_blank">
         <label for="nombre_postulante">Nombre del Postulante:</label><br>
         <input type="text" id="nombre_postulante" name="nombre_postulante" required><br><br>
 
         <p>Selecciona a 3 integrantes del comité:</p>
-        {% for integrante in [
-            "Abg. Andrea del Pilar Chuquipiondo Sánchez",
-            "Lic. Adm. Gilda Eloisa Hidalgo Chávez",
-            "Lic. Adm. Rosa Elena Pérez de Mori",
-            "Presidente. Reynaldo Elías Cajamarca Porras"
-        ] %}
-            <input type="checkbox" name="integrantes" value="{{ integrante }}"> {{ integrante }}<br>
-        {% endfor %}
+        <div id="integrantes-container">
+            {% for integrante in integrantes %}
+                <div>
+                    <input type="checkbox" name="integrantes" value="{{ integrante }}"> {{ integrante }}<br>
+                </div>
+            {% endfor %}
+        </div>
 
+        <div class="seccion-miembros">
+            <h3>Agregar nuevo miembro del comité</h3>
+            <div class="nuevo-miembro">
+                <input type="text" id="nuevo-integrante" placeholder="Ej: Lic. Juan Pérez López">
+                <button type="button" class="btn-agregar" id="btn-agregar-miembro">Agregar</button>
+            </div>
+        </div>
+        
         <br>
         <button type="submit">Generar PDF</button>
     </form>
 
-    <br><br>
- 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Cargar los integrantes guardados localmente
+            const integrantesGuardados = JSON.parse(localStorage.getItem('integrantesComite') || '[]');
+            
+            // Agregar integrantes guardados a la lista
+            integrantesGuardados.forEach(function(integrante) {
+                agregarIntegranteDOM(integrante);
+            });
+            
+            // Configurar evento del botón agregar
+            document.getElementById('btn-agregar-miembro').addEventListener('click', function() {
+                const nuevoIntegrante = document.getElementById('nuevo-integrante').value.trim();
+                
+                if (!nuevoIntegrante) {
+                    alert('Por favor ingresa el nombre del nuevo integrante');
+                    return;
+                }
+                
+                // Guardar en localStorage
+                const integrantesActuales = JSON.parse(localStorage.getItem('integrantesComite') || '[]');
+                if (!integrantesActuales.includes(nuevoIntegrante)) {
+                    integrantesActuales.push(nuevoIntegrante);
+                    localStorage.setItem('integrantesComite', JSON.stringify(integrantesActuales));
+                    
+                    // Agregar a la interfaz
+                    agregarIntegranteDOM(nuevoIntegrante);
+                    
+                    // Limpiar campo
+                    document.getElementById('nuevo-integrante').value = '';
+                } else {
+                    alert('Este integrante ya existe en la lista');
+                }
+            });
+            
+            // Función para agregar un integrante al DOM
+            function agregarIntegranteDOM(integrante) {
+                const container = document.getElementById('integrantes-container');
+                
+                const div = document.createElement('div');
+                div.innerHTML = `
+                    <input type="checkbox" name="integrantes" value="${integrante}"> 
+                    ${integrante}
+                    <button type="button" class="btn-eliminar">Eliminar</button>
+                `;
+                
+                // Configurar botón eliminar
+                const btnEliminar = div.querySelector('.btn-eliminar');
+                btnEliminar.addEventListener('click', function() {
+                    if (confirm('¿Estás seguro de eliminar este integrante?')) {
+                        // Eliminar del localStorage
+                        const integrantesActuales = JSON.parse(localStorage.getItem('integrantesComite') || '[]');
+                        const index = integrantesActuales.indexOf(integrante);
+                        if (index !== -1) {
+                            integrantesActuales.splice(index, 1);
+                            localStorage.setItem('integrantesComite', JSON.stringify(integrantesActuales));
+                        }
+                        
+                        // Eliminar del DOM
+                        div.remove();
+                    }
+                });
+                
+                container.appendChild(div);
+            }
+        });
+    </script>
 </body>
 </html>
