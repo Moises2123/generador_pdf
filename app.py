@@ -6,7 +6,7 @@ import os
 app = Flask(__name__)
 app.secret_key = 'clave_secreta'  # Necesaria para usar session
 
-# Lista de integrantes disponibles
+# Lista de integrantes disponibles (predefinidos)
 INTEGRANTES_COMITE = [
     "Abg. Andrea del Pilar Chuquipiondo Sánchez",
     "Lic. Adm. Gilda Eloisa Hidalgo Chávez",
@@ -16,7 +16,42 @@ INTEGRANTES_COMITE = [
 
 @app.route("/")
 def index():
-    return render_template("index.html", integrantes=INTEGRANTES_COMITE)
+    # Verificar si hay integrantes personalizados en la sesión
+    integrantes = session.get('integrantes_personalizados', INTEGRANTES_COMITE)
+    return render_template("index.html", integrantes=integrantes)
+
+@app.route("/agregar_integrante", methods=["POST"])
+def agregar_integrante():
+    nuevo_integrante = request.form.get("nuevo_integrante")
+    
+    if not nuevo_integrante:
+        return "El nombre del integrante no puede estar vacío", 400
+    
+    # Obtener la lista actual de integrantes (de sesión o predeterminada)
+    integrantes = session.get('integrantes_personalizados', INTEGRANTES_COMITE.copy())
+    
+    # Verificar si ya existe
+    if nuevo_integrante not in integrantes:
+        integrantes.append(nuevo_integrante)
+        session['integrantes_personalizados'] = integrantes
+    
+    return redirect(url_for('index'))
+
+@app.route("/eliminar_integrante", methods=["POST"])
+def eliminar_integrante():
+    integrante = request.form.get("integrante")
+    
+    if not integrante:
+        return "Debes especificar el integrante a eliminar", 400
+    
+    # Obtener la lista actual y eliminar el integrante
+    integrantes = session.get('integrantes_personalizados', INTEGRANTES_COMITE.copy())
+    
+    if integrante in integrantes:
+        integrantes.remove(integrante)
+        session['integrantes_personalizados'] = integrantes
+    
+    return redirect(url_for('index'))
 
 @app.route("/generar_documento", methods=["POST"])
 def generar_documento_route():
@@ -32,6 +67,7 @@ def generar_documento_route():
         return redirect(url_for('descargar_pdf'))  # <--- Redirige directamente al PDF
     except Exception as e:
         return f"Error al generar el PDF: {str(e)}", 500
+
 @app.route("/descargar_pdf")
 def descargar_pdf():
     pdf_path = session.get('pdf_path')
