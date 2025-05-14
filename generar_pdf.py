@@ -1,11 +1,15 @@
-# generar_pdf.py
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 from textwrap import wrap
 import tempfile
 import os
 
-def generar_documento(nombre_postulante, lista_integrantes):
+def generar_documento(
+    nombre_postulante, 
+    datos_integrantes,
+    titulo_proceso="PROCESO SELECCIÓN PERSONAL SUPLENCIA N° 002-2025-LORETO\nBAJO LOS ALCANCES DEL DECRETO LEGISLATIVO N° 728 DETERMINADO BAJO LA MODALIDAD DE SUPLENCIA",
+    dependencia="Módulo Penal Central"
+):
     temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
     c = canvas.Canvas(temp_file.name, pagesize=letter)
     width, height = letter
@@ -15,7 +19,6 @@ def generar_documento(nombre_postulante, lista_integrantes):
     cell_header_font = ("Helvetica-Bold", 9)
     cell_font_bold = ("Helvetica-Bold", 8)
     cell_font = ("Helvetica", 8)
-
     no_bold = {
         "Seguridad (convicción y coherencia en la expresión de sus ideas)",
         "Genera confianza y credibilidad en el ámbito técnico requerido para el puesto",
@@ -35,23 +38,30 @@ def generar_documento(nombre_postulante, lista_integrantes):
         ["", "Total", "", "20", ""]
     ]
 
-    for integrante in lista_integrantes:
+    # Usamos el título como un solo elemento completo
+    titulo_completo = titulo_proceso.strip().replace('\n', ' ')
+
+    for integrante_datos in datos_integrantes:
+        integrante = integrante_datos["nombre"]
+        codigo_siga = integrante_datos["codigo_siga"]
+        cargo = integrante_datos["cargo"]
+        
         encabezado = [
             "ANEXO 10 - B",
             "FORMATO DE CALIFICACIÓN POR CRITERIOS EN LA ENTREVISTA PERSONAL",
             "CORTE SUPERIOR DE JUSTICIA DE LORETO",
-            "PROCESO SELECCIÓN PERSONAL SUPLENCIA N° 002-2025-LORETO",
-            "BAJO LOS ALCANCES DEL DECRETO LEGISLATIVO N° 728 DETERMINADO BAJO LA MODALIDAD DE SUPLENCIA"
+            titulo_completo
         ]
+        
         c.setFont(*header_font)
         for i, linea in enumerate(encabezado):
             y = height - 50 - i * 15
             c.drawCentredString(width / 2, y, linea)
 
         detalles = [
-            "Código de puesto (SIGA): 00415",
-            "Nombre de la Posición o Cargo: Asistente jurisdiccional",
-            "Dependencia: Módulo Penal Central",
+            f"Código de puesto (SIGA): {codigo_siga}",
+            f"Nombre de la Posición o Cargo: {cargo}",
+            f"Dependencia: {dependencia}",
             f"Nombre del Postulante: {nombre_postulante}",
             f"Apellidos y Nombres del Integrante del Comité: {integrante}"
         ]

@@ -19,7 +19,7 @@
         form {
             background-color: #fff;
             margin: 20px auto;
-            width: 500px;
+            width: 600px;
             padding: 20px;
             border: 1px solid #a80b0b;
             border-radius: 5px;
@@ -30,6 +30,11 @@
             text-align: center;
             color: #333;
             margin-bottom: 20px;
+        }
+
+        h3 {
+            color: #333;
+            margin-bottom: 10px;
         }
 
         label {
@@ -153,12 +158,49 @@
             border-top: 1px solid #eee;
             padding-top: 15px;
         }
+        
+        .seccion-parametros {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+        }
     </style>
 </head>
 <body>
     <form id="generar-form" action="/generar_documento" method="post" target="_blank">
-        <label for="nombre_postulante">Nombre del Postulante:</label><br>
-        <input type="text" id="nombre_postulante" name="nombre_postulante" required><br><br>
+        <h2>Parámetros del Proceso</h2>
+        
+        <div class="seccion-parametros">
+       <div class="seccion-parametros">
+            <div class="form-group">
+                <label for="titulo_proceso">Título Completo del Proceso:</label>
+                <input type="text" id="titulo_proceso" name="titulo_proceso" 
+                    value="PROCESO SELECCIÓN PERSONAL SUPLENCIA N° 002-2025-LORETO BAJO LOS ALCANCES DEL DECRETO LEGISLATIVO N° 728 DETERMINADO BAJO LA MODALIDAD DE SUPLENCIA" 
+                    required 
+                    style="width: 100%; padding: 8px; border: 1px solid #a80b0b; border-radius: 4px;">
+            </div>
+                        <div class="form-group">
+                <label for="codigo_siga">Código de puesto (SIGA):</label>
+                <input type="text" id="codigo_siga" name="codigo_siga" value="00415" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="nombre_cargo">Nombre de la Posición o Cargo:</label>
+                <input type="text" id="nombre_cargo" name="nombre_cargo" value="Asistente jurisdiccional" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="dependencia">Dependencia:</label>
+                <input type="text" id="dependencia" name="dependencia" value="Módulo Penal Central" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="nombre_postulante">Nombre del Postulante:</label>
+            <input type="text" id="nombre_postulante" name="nombre_postulante" required>
+        </div>
 
         <p>Selecciona a 3 integrantes del comité:</p>
         <div id="integrantes-container">
@@ -190,6 +232,9 @@
             integrantesGuardados.forEach(function(integrante) {
                 agregarIntegranteDOM(integrante);
             });
+            
+            // Cargar parámetros guardados
+            cargarParametrosGuardados();
             
             // Configurar evento del botón agregar
             document.getElementById('btn-agregar-miembro').addEventListener('click', function() {
@@ -246,6 +291,45 @@
                 
                 container.appendChild(div);
             }
+            
+            // Guardar parámetros en localStorage cuando cambien
+            document.getElementById('titulo_proceso').addEventListener('change', guardarParametros);
+            document.getElementById('subtitulo_proceso').addEventListener('change', guardarParametros);
+            document.getElementById('codigo_siga').addEventListener('change', guardarParametros);
+            document.getElementById('nombre_cargo').addEventListener('change', guardarParametros);
+            document.getElementById('dependencia').addEventListener('change', guardarParametros);
+            
+            function guardarParametros() {
+                const parametros = {
+                    titulo_proceso: document.getElementById('titulo_proceso').value,
+                    subtitulo_proceso: document.getElementById('subtitulo_proceso').value,
+                    codigo_siga: document.getElementById('codigo_siga').value,
+                    nombre_cargo: document.getElementById('nombre_cargo').value,
+                    dependencia: document.getElementById('dependencia').value
+                };
+                
+                localStorage.setItem('parametrosProceso', JSON.stringify(parametros));
+            }
+            
+            function cargarParametrosGuardados() {
+                const parametros = JSON.parse(localStorage.getItem('parametrosProceso') || '{}');
+                
+                if (parametros.titulo_proceso) {
+                    document.getElementById('titulo_proceso').value = parametros.titulo_proceso;
+                }
+                if (parametros.subtitulo_proceso) {
+                    document.getElementById('subtitulo_proceso').value = parametros.subtitulo_proceso;
+                }
+                if (parametros.codigo_siga) {
+                    document.getElementById('codigo_siga').value = parametros.codigo_siga;
+                }
+                if (parametros.nombre_cargo) {
+                    document.getElementById('nombre_cargo').value = parametros.nombre_cargo;
+                }
+                if (parametros.dependencia) {
+                    document.getElementById('dependencia').value = parametros.dependencia;
+                }
+            }
 
             // Interceptar el envío del formulario para abrir en nueva pestaña
             document.getElementById('generar-form').addEventListener('submit', function(event) {
@@ -253,6 +337,9 @@
 
                 const form = this;
                 const formData = new FormData(form);
+
+                // Guardar los parámetros al enviar
+                guardarParametros();
 
                 // Crear un nuevo formulario y configurarlo para POST y target _blank
                 const newForm = document.createElement('form');

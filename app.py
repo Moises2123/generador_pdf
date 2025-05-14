@@ -57,12 +57,40 @@ def eliminar_integrante():
 def generar_documento_route():
     nombre_postulante = request.form.get("nombre_postulante")
     seleccionados = request.form.getlist("integrantes")
+    
+    # Nuevo parámetro de título completo
+    titulo_proceso = request.form.get("titulo_proceso", "PROCESO SELECCIÓN PERSONAL SUPLENCIA N° 002-2025-LORETO BAJO LOS ALCANCES DEL DECRETO LEGISLATIVO N° 728 DETERMINADO BAJO LA MODALIDAD DE SUPLENCIA")
+    dependencia = request.form.get("dependencia", "Módulo Penal Central")
+    
+    # Recopilar información adicional para cada integrante seleccionado
+    integrantes_con_datos = []
+    for integrante in seleccionados:
+        # Crear nombres de campo seguros para los formularios
+        nombre_campo_siga = f"codigo_siga_{integrante.replace(' ', '_').replace('.', '')}"
+        nombre_campo_cargo = f"cargo_{integrante.replace(' ', '_').replace('.', '')}"
+        
+        # Obtener valores, usar valores por defecto si no existen
+        codigo_siga = request.form.get(nombre_campo_siga, "00415")
+        cargo = request.form.get(nombre_campo_cargo, "Asistente jurisdiccional")
+        
+        integrantes_con_datos.append({
+            "nombre": integrante,
+            "codigo_siga": codigo_siga,
+            "cargo": cargo
+        })
 
     if not nombre_postulante or len(seleccionados) != 3:
         abort(400, "Debes completar todos los campos y seleccionar tres integrantes del comité.")
 
     try:
-        archivo_pdf = generar_documento(nombre_postulante, seleccionados)
+        # Pasar los datos al generador de PDF
+        archivo_pdf = generar_documento(
+            nombre_postulante,
+            integrantes_con_datos,
+            titulo_proceso,
+            dependencia
+        )
+        
         # Leer el contenido del archivo PDF
         with open(archivo_pdf, 'rb') as pdf_file:
             pdf_content = pdf_file.read()
@@ -71,7 +99,7 @@ def generar_documento_route():
         # Crear una respuesta de Flask con el PDF
         response = make_response(pdf_content)
         response.headers['Content-Type'] = 'application/pdf'
-        response.headers['Content-Disposition'] = 'inline; filename="documento.pdf"' # <-- Esto es importante
+        response.headers['Content-Disposition'] = 'inline; filename="documento.pdf"'
         return response
     except Exception as e:
         return f"Error al generar el PDF: {str(e)}", 500
