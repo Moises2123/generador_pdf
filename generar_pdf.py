@@ -1,3 +1,4 @@
+
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 from textwrap import wrap
@@ -38,20 +39,46 @@ def generar_documento(
         ["", "Total", "", "20", ""]
     ]
 
-    # Usamos el título como un solo elemento completo
-    titulo_completo = titulo_proceso.strip().replace('\n', ' ')
-
+    # Dividir el título en líneas si es demasiado largo
+    titulo_completo = titulo_proceso.strip()
+    # Establecer un límite de caracteres por línea (ajusta según sea necesario)
+    max_chars_per_line = 60
+    
     for integrante_datos in datos_integrantes:
         integrante = integrante_datos["nombre"]
         codigo_siga = integrante_datos["codigo_siga"]
         cargo = integrante_datos["cargo"]
         
+        # Dividir el título en múltiples líneas si es necesario
+        titulo_lineas = []
+        if len(titulo_completo) > max_chars_per_line:
+            palabras = titulo_completo.split()
+            linea_actual = ""
+            
+            for palabra in palabras:
+                if len(linea_actual + " " + palabra) <= max_chars_per_line:
+                    if linea_actual:
+                        linea_actual += " " + palabra
+                    else:
+                        linea_actual = palabra
+                else:
+                    titulo_lineas.append(linea_actual)
+                    linea_actual = palabra
+            
+            # Agregar la última línea
+            if linea_actual:
+                titulo_lineas.append(linea_actual)
+        else:
+            titulo_lineas = [titulo_completo]
+        
         encabezado = [
             "ANEXO 10 - B",
             "FORMATO DE CALIFICACIÓN POR CRITERIOS EN LA ENTREVISTA PERSONAL",
-            "CORTE SUPERIOR DE JUSTICIA DE LORETO",
-            titulo_completo
+            "CORTE SUPERIOR DE JUSTICIA DE LORETO"
         ]
+        
+        # Añadir las líneas del título al encabezado
+        encabezado.extend(titulo_lineas)
         
         c.setFont(*header_font)
         for i, linea in enumerate(encabezado):
@@ -65,7 +92,11 @@ def generar_documento(
             f"Nombre del Postulante: {nombre_postulante}",
             f"Apellidos y Nombres del Integrante del Comité: {integrante}"
         ]
-        x0, y0 = 50, height - 150
+        
+        # Ajustar la posición vertical según la cantidad de líneas en el título
+        ajuste_y = len(titulo_lineas) - 1  # -1 porque una línea ya está considerada en el diseño original
+        x0, y0 = 50, height - 150 - (ajuste_y * 15)
+        
         c.setFont(*detail_font)
         for linea in detalles:
             c.drawString(x0, y0, linea)
