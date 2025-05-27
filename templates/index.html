@@ -294,15 +294,17 @@
             
             // Guardar parámetros en localStorage cuando cambien
             document.getElementById('titulo_proceso').addEventListener('change', guardarParametros);
-            document.getElementById('subtitulo_proceso').addEventListener('change', guardarParametros);
+            // ELIMINAR ESTA LÍNEA porque no existe el elemento:
+            // document.getElementById('subtitulo_proceso').addEventListener('change', guardarParametros);
             document.getElementById('codigo_siga').addEventListener('change', guardarParametros);
             document.getElementById('nombre_cargo').addEventListener('change', guardarParametros);
             document.getElementById('dependencia').addEventListener('change', guardarParametros);
-            
+
             function guardarParametros() {
                 const parametros = {
                     titulo_proceso: document.getElementById('titulo_proceso').value,
-                    subtitulo_proceso: document.getElementById('subtitulo_proceso').value,
+                    // ELIMINAR ESTA LÍNEA:
+                    // subtitulo_proceso: document.getElementById('subtitulo_proceso').value,
                     codigo_siga: document.getElementById('codigo_siga').value,
                     nombre_cargo: document.getElementById('nombre_cargo').value,
                     dependencia: document.getElementById('dependencia').value
@@ -310,16 +312,17 @@
                 
                 localStorage.setItem('parametrosProceso', JSON.stringify(parametros));
             }
-            
+
             function cargarParametrosGuardados() {
                 const parametros = JSON.parse(localStorage.getItem('parametrosProceso') || '{}');
                 
                 if (parametros.titulo_proceso) {
                     document.getElementById('titulo_proceso').value = parametros.titulo_proceso;
                 }
-                if (parametros.subtitulo_proceso) {
-                    document.getElementById('subtitulo_proceso').value = parametros.subtitulo_proceso;
-                }
+                // ELIMINAR ESTAS LÍNEAS:
+                // if (parametros.subtitulo_proceso) {
+                //     document.getElementById('subtitulo_proceso').value = parametros.subtitulo_proceso;
+                // }
                 if (parametros.codigo_siga) {
                     document.getElementById('codigo_siga').value = parametros.codigo_siga;
                 }

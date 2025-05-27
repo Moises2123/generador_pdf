@@ -10,7 +10,7 @@ app.secret_key = 'clave_secreta'  # Necesaria para usar session
 INTEGRANTES_COMITE = [
     "Abg. Andrea del Pilar Chuquipiondo Sánchez",
     "Lic. Adm. Gilda Eloisa Hidalgo Chávez",
-    "Lic. Adm. Rosa Elena Pérez de Mori",
+    "Lic. Adsm. Rosa Elena Pérez de Mori",
     "Presidente. Reynaldo Elías Cajamarca Porras"
 ]
 
@@ -52,7 +52,6 @@ def eliminar_integrante():
         session['integrantes_personalizados'] = integrantes
 
     return redirect(url_for('index'))
-
 @app.route("/generar_documento", methods=["POST"])
 def generar_documento_route():
     nombre_postulante = request.form.get("nombre_postulante")
@@ -62,21 +61,18 @@ def generar_documento_route():
     titulo_proceso = request.form.get("titulo_proceso", "PROCESO SELECCIÓN PERSONAL SUPLENCIA N° 002-2025-LORETO BAJO LOS ALCANCES DEL DECRETO LEGISLATIVO N° 728 DETERMINADO BAJO LA MODALIDAD DE SUPLENCIA")
     dependencia = request.form.get("dependencia", "Módulo Penal Central")
     
+    # AQUÍ ESTÁ LA CORRECCIÓN: Capturar los valores globales del formulario
+    codigo_siga_global = request.form.get("codigo_siga", "00415")
+    cargo_global = request.form.get("nombre_cargo", "Asistente jurisdiccional")
+    
     # Recopilar información adicional para cada integrante seleccionado
     integrantes_con_datos = []
     for integrante in seleccionados:
-        # Crear nombres de campo seguros para los formularios
-        nombre_campo_siga = f"codigo_siga_{integrante.replace(' ', '_').replace('.', '')}"
-        nombre_campo_cargo = f"cargo_{integrante.replace(' ', '_').replace('.', '')}"
-        
-        # Obtener valores, usar valores por defecto si no existen
-        codigo_siga = request.form.get(nombre_campo_siga, "00415")
-        cargo = request.form.get(nombre_campo_cargo, "Asistente jurisdiccional")
-        
+        # Usar los valores globales para todos los integrantes
         integrantes_con_datos.append({
             "nombre": integrante,
-            "codigo_siga": codigo_siga,
-            "cargo": cargo
+            "codigo_siga": codigo_siga_global,
+            "cargo": cargo_global
         })
 
     if not nombre_postulante or len(seleccionados) != 3:
