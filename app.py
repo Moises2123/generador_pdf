@@ -10,7 +10,7 @@ app.secret_key = 'clave_secreta'  # Necesaria para usar session
 INTEGRANTES_COMITE = [
     "Abg. Andrea del Pilar Chuquipiondo Sánchez",
     "Lic. Adm. Gilda Eloisa Hidalgo Chávez",
-    "Lic. Adsm. Rosa Elena Pérez de Mori",
+    "Lic. Adm. Rosa Elena Pérez de Mori",
     "Presidente. Reynaldo Elías Cajamarca Porras"
 ]
 
