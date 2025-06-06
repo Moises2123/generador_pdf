@@ -7,7 +7,7 @@ app = Flask(__name__)
 app.secret_key = 'clave_secreta'  # Necesaria para usar session
 
 # Lista de integrantes disponibles (predefinidos)
-INTEGRANTES_COMITE = [
+integrantesIniciales = [
     "Abg. Andrea del Pilar Chuquipiondo Sánchez",
     "Lic. Adm. Gilda Eloisa Hidalgo Chávez",
     "Lic. Adm. Rosa Elena Pérez de Mori",
@@ -17,7 +17,7 @@ INTEGRANTES_COMITE = [
 @app.route("/")
 def index():
     # Verificar si hay integrantes personalizados en la sesión
-    integrantes = session.get('integrantes_personalizados', INTEGRANTES_COMITE)
+    integrantes = session.get('integrantes_personalizados', integrantesIniciales)
     return render_template("index.html", integrantes=integrantes)
 
 @app.route("/agregar_integrante", methods=["POST"])
@@ -28,8 +28,7 @@ def agregar_integrante():
         return "El nombre del integrante no puede estar vacío", 400
 
     # Obtener la lista actual de integrantes (de sesión o predeterminada)
-    integrantes = session.get('integrantes_personalizados', INTEGRANTES_COMITE.copy())
-
+    integrantes = session.get('integrantes_personalizados', integrantesIniciales.copy())
     # Verificar si ya existe
     if nuevo_integrante not in integrantes:
         integrantes.append(nuevo_integrante)
@@ -45,7 +44,7 @@ def eliminar_integrante():
         return "Debes especificar el integrante a eliminar", 400
 
     # Obtener la lista actual y eliminar el integrante
-    integrantes = session.get('integrantes_personalizados', INTEGRANTES_COMITE.copy())
+    integrantes = session.get('integrantes_personalizados', integrantesIniciales.copy())
 
     if integrante in integrantes:
         integrantes.remove(integrante)
@@ -109,3 +108,4 @@ def descargar_pdf():
 
 if __name__ == '__main__':
     app.run(debug=True)
+    

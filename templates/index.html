@@ -2,368 +2,700 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Generar Documento</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Documentos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* Estilos básicos para el formulario */
-        body {
-            font-family: sans-serif;
-            background-color: #f4f4f4;
+        :root {
+            --primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --accent: #4f46e5;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1f2937;
+            --light: #f8fafc;
+            --white: #ffffff;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+
+        * {
             margin: 0;
             padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        form {
-            background-color: #fff;
-            margin: 20px auto;
-            width: 600px;
-            padding: 20px;
-            border: 1px solid #a80b0b;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 20px;
-        }
-
-        h3 {
-            color: #333;
-            margin-bottom: 10px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #555;
-        }
-
-        input[type="text"] {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 10px;
-            border: 1px solid #a80b0b;
-            border-radius: 4px;
             box-sizing: border-box;
         }
 
-        button {
-            background-color: #a80b0b;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            display: block;
-            margin: 10px auto;
-            width: 200px; /* Ancho del botón */
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            line-height: 1.6;
         }
 
-        button:hover {
-            background-color: #870909;
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--white);
+            border-radius: 24px;
+            box-shadow: var(--shadow-xl);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .header {
+            background: var(--primary);
+            padding: 3rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(255,255,255,0.05) 10px,
+                rgba(255,255,255,0.05) 20px
+            );
+            animation: slide 20s linear infinite;
+        }
+
+        @keyframes slide {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header h1 {
+            color: var(--white);
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            color: rgba(255,255,255,0.9);
+            font-size: 1.1rem;
+            font-weight: 400;
+        }
+
+        .form-container {
+            padding: 3rem 2rem;
+        }
+
+        .section {
+            margin-bottom: 2.5rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--gray-800);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-title i {
+            color: var(--accent);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
         }
 
         .form-group {
-            margin-bottom: 15px;
+            position: relative;
         }
 
-        .checkbox-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 15px;
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            color: var(--gray-700);
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
         }
 
-        .checkbox-group label {
-            display: inline-flex;
+        .input-wrapper {
+            position: relative;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            border: 2px solid var(--gray-200);
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: var(--white);
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-400);
+            transition: color 0.3s ease;
+        }
+
+        .form-group input:focus + .input-icon {
+            color: var(--accent);
+        }
+
+        .members-section {
+            background: var(--gray-50);
+            padding: 2rem;
+            border-radius: 16px;
+            border: 1px solid var(--gray-200);
+        }
+
+        .members-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .member-card {
+            background: var(--white);
+            border: 2px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .member-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .member-card.selected {
+            background: var(--accent);
+            color: var(--white);
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .member-card input[type="checkbox"] {
+            display: none;
+        }
+
+        .member-card .member-name {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .member-card .checkmark {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--success);
+            color: var(--white);
+            display: none;
             align-items: center;
-            margin-bottom: 0;
-            font-weight: normal;
-            color: #555;
+            justify-content: center;
+            font-size: 0.7rem;
         }
 
-        .checkbox-group input[type="checkbox"] {
-            margin-right: 5px;
+        .member-card.selected .checkmark {
+            display: flex;
+        }
+
+        .member-card .delete-btn {
+            position: absolute;
+            top: 0.5rem;
+            left: 0.5rem;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--danger);
+            color: var(--white);
+            border: none;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .member-card:hover .delete-btn {
+            opacity: 1;
+        }
+
+        .member-card .delete-btn:hover {
+            transform: scale(1.1);
+            background: #dc2626;
+        }
+
+        .add-member {
+            background: var(--white);
+            border: 2px dashed var(--gray-300);
+            border-radius: 12px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .add-member input {
+            border: 1px solid var(--gray-300);
+            border-radius: 8px;
+            padding: 0.75rem;
+            font-size: 0.9rem;
+        }
+
+        .add-member button {
+            background: var(--secondary);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            padding: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .add-member button:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .submit-section {
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        .submit-btn {
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            border-radius: 16px;
+            padding: 1.25rem 3rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .submit-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .submit-btn:hover::before {
+            left: 100%;
+        }
+
+        .selected-count {
+            background: var(--accent);
+            color: var(--white);
+            border-radius: 20px;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-left: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .header {
+                padding: 2rem 1rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .form-container {
+                padding: 2rem 1rem;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .members-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .loading {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid var(--gray-300);
+            border-top: 5px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         .error-message {
-            color: red;
-            margin-top: 10px;
-            text-align: center;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            display: none;
         }
 
-        /* Nuevos estilos para la sección de agregar miembros */
-        .nuevo-miembro {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-
-        .nuevo-miembro input {
-            flex-grow: 1;
-            margin-bottom: 0;
-        }
-
-        .btn-agregar {
-            margin: 0;
-            width: auto;
-            padding: 8px 15px;
-        }
-
-        .lista-miembros {
-            margin-top: 15px;
-            max-height: 200px;
-            overflow-y: auto;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            padding: 10px;
-        }
-
-        .miembro-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 5px 0;
-            border-bottom: 1px solid #eee;
-        }
-
-        .miembro-item:last-child {
-            border-bottom: none;
-        }
-
-        .btn-eliminar {
-            background-color: #d9534f;
-            color: white;
-            border: none;
-            border-radius: 3px;
-            padding: 2px 8px;
-            cursor: pointer;
-            font-size: 12px;
-            margin: 0;
-            width: auto;
-        }
-
-        .btn-eliminar:hover {
-            background-color: #c9302c;
-        }
-
-        .seccion-miembros {
-            margin-top: 20px;
-            border-top: 1px solid #eee;
-            padding-top: 15px;
-        }
-        
-        .seccion-parametros {
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 15px;
-            margin-bottom: 20px;
-            background-color: #f9f9f9;
+        .success-message {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #16a34a;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            display: none;
         }
     </style>
 </head>
 <body>
-    <form id="generar-form" action="/generar_documento" method="post" target="_blank">
-        <h2>Parámetros del Proceso</h2>
-        
-        <div class="seccion-parametros">
-       <div class="seccion-parametros">
-            <div class="form-group">
-                <label for="titulo_proceso">Título Completo del Proceso:</label>
-                <input type="text" id="titulo_proceso" name="titulo_proceso" 
-                    value="PROCESO SELECCIÓN PERSONAL SUPLENCIA N° 002-2025-LORETO BAJO LOS ALCANCES DEL DECRETO LEGISLATIVO N° 728 DETERMINADO BAJO LA MODALIDAD DE SUPLENCIA" 
-                    required 
-                    style="width: 100%; padding: 8px; border: 1px solid #a80b0b; border-radius: 4px;">
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <h1><i class="fas fa-file-alt"></i> Generador de Documentos</h1>
+                <p>Sistema profesional para la generación de documentos oficiales</p>
             </div>
+        </div>
+
+        <div class="form-container">
+            <form id="generar-form" action="/generar_documento" method="post" target="_blank">
+                <div class="section">
+                    <h2 class="section-title">
+                        <i class="fas fa-cog"></i>
+                        Parámetros del Proceso
+                    </h2>
+                    
+                    <div class="form-grid">
                         <div class="form-group">
-                <label for="codigo_siga">Código de puesto (SIGA):</label>
-                <input type="text" id="codigo_siga" name="codigo_siga" value="00415" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="nombre_cargo">Nombre de la Posición o Cargo:</label>
-                <input type="text" id="nombre_cargo" name="nombre_cargo" value="Asistente jurisdiccional" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="dependencia">Dependencia:</label>
-                <input type="text" id="dependencia" name="dependencia" value="Módulo Penal Central" required>
-            </div>
-        </div>
+                            <label for="titulo_proceso">Título Completo del Proceso</label>
+                            <div class="input-wrapper">
+                                <input type="text" id="titulo_proceso" name="titulo_proceso" required>
+                                <i class="fas fa-heading input-icon"></i>
+                            </div>
+                        </div>
 
-        <div class="form-group">
-            <label for="nombre_postulante">Nombre del Postulante:</label>
-            <input type="text" id="nombre_postulante" name="nombre_postulante" required>
-        </div>
+                        <div class="form-group">
+                            <label for="codigo_siga">Código de puesto (SIGA)</label>
+                            <div class="input-wrapper">
+                                <input type="text" id="codigo_siga" name="codigo_siga" required>
+                                <i class="fas fa-barcode input-icon"></i>
+                            </div>
+                        </div>
 
-        <p>Selecciona a 3 integrantes del comité:</p>
-        <div id="integrantes-container">
-            {% for integrante in integrantes %}
-                <div>
-                    <input type="checkbox" name="integrantes" value="{{ integrante }}"> {{ integrante }}<br>
+                        <div class="form-group">
+                            <label for="nombre_cargo">Nombre de la Posición o Cargo</label>
+                            <div class="input-wrapper">
+                                <input type="text" id="nombre_cargo" name="nombre_cargo" required>
+                                <i class="fas fa-briefcase input-icon"></i>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="dependencia">Dependencia</label>
+                            <div class="input-wrapper">
+                                <input type="text" id="dependencia" name="dependencia" required>
+                                <i class="fas fa-building input-icon"></i>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="nombre_postulante">Nombre del Postulante</label>
+                            <div class="input-wrapper">
+                                <input type="text" id="nombre_postulante" name="nombre_postulante" required>
+                                <i class="fas fa-user input-icon"></i>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            {% endfor %}
-        </div>
 
-        <div class="seccion-miembros">
-            <h3>Agregar nuevo miembro del comité</h3>
-            <div class="nuevo-miembro">
-                <input type="text" id="nuevo-integrante" placeholder="Ej: Lic. Juan Pérez López">
-                <button type="button" class="btn-agregar" id="btn-agregar-miembro">Agregar</button>
-            </div>
+                <div class="section">
+                    <h2 class="section-title">
+                        <i class="fas fa-users"></i>
+                        Selecciona 3 integrantes del comité
+                        <span class="selected-count" id="selected-count">0/3</span>
+                    </h2>
+                    
+                    <div class="members-section">
+                        <div class="members-grid" id="members-grid">
+                            <!-- Los miembros se cargarán aquí dinámicamente -->
+                        </div>
+
+                        <div class="add-member">
+                            <input type="text" id="nuevo-integrante" placeholder="Ej: Lic. Juan Pérez López">
+                            <button type="button" id="btn-agregar-miembro">
+                                <i class="fas fa-plus"></i> Agregar Miembro
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="submit-section">
+                    <button type="submit" class="submit-btn" id="submit-btn">
+                        <i class="fas fa-file-pdf"></i> Generar PDF
+                    </button>
+                    <div class="error-message" id="error-message"></div>
+                    <div class="success-message" id="success-message"></div>
+                </div>
+            </form>
         </div>
-        
-        <br>
-        <button type="submit">Generar PDF</button>
-    </form>
+    </div>
+
+    <div class="loading" id="loading">
+        <div class="loading-spinner"></div>
+    </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Cargar los integrantes guardados localmente
-            const integrantesGuardados = JSON.parse(localStorage.getItem('integrantesComite') || '[]');
+        // Datos de ejemplo para los integrantes (reemplaza con tus datos reales)
+        const integrantesIniciales = [
+    "Abg. Andrea del Pilar Chuquipiondo Sánchez",
+    "Lic. Adm. Gilda Eloisa Hidalgo Chávez",
+    "Lic. Adm. Rosa Elena Pérez de Mori",
+    "Presidente. Reynaldo Elías Cajamarca Porras"
+];
+
+        let integrantesSeleccionados = [];
+        const maxIntegrantes = 3;
+
+        function inicializarIntegrantes() {
+            const grid = document.getElementById('members-grid');
             
-            // Agregar integrantes guardados a la lista
-            integrantesGuardados.forEach(function(integrante) {
-                agregarIntegranteDOM(integrante);
+            integrantesIniciales.forEach(integrante => {
+                crearTarjetaIntegrante(integrante, true); // true indica que es inicial (no se puede eliminar)
+            });
+        }
+
+        function crearTarjetaIntegrante(nombre, esInicial = false) {
+            const grid = document.getElementById('members-grid');
+            const card = document.createElement('div');
+            card.className = 'member-card';
+            card.innerHTML = `
+                <input type="checkbox" name="integrantes" value="${nombre}" id="member-${nombre.replace(/\s+/g, '-')}">
+                <div class="member-name">${nombre}</div>
+                <div class="checkmark"><i class="fas fa-check"></i></div>
+                ${!esInicial ? '<button class="delete-btn" type="button"><i class="fas fa-times"></i></button>' : ''}
+            `;
+            
+            // Evento para seleccionar/deseleccionar
+            card.addEventListener('click', function(e) {
+                // Evitar que el click en el botón de eliminar active la selección
+                if (e.target.closest('.delete-btn')) return;
+                
+                const checkbox = card.querySelector('input[type="checkbox"]');
+                
+                if (checkbox.checked) {
+                    // Deseleccionar
+                    checkbox.checked = false;
+                    card.classList.remove('selected');
+                    integrantesSeleccionados = integrantesSeleccionados.filter(i => i !== nombre);
+                } else {
+                    // Seleccionar solo si no hemos alcanzado el máximo
+                    if (integrantesSeleccionados.length < maxIntegrantes) {
+                        checkbox.checked = true;
+                        card.classList.add('selected');
+                        integrantesSeleccionados.push(nombre);
+                    } else {
+                        mostrarError(`Solo puedes seleccionar máximo ${maxIntegrantes} integrantes`);
+                    }
+                }
+                
+                actualizarContador();
             });
             
-            // Cargar parámetros guardados
-            cargarParametrosGuardados();
+            // Evento para eliminar (solo para integrantes agregados dinámicamente)
+            if (!esInicial) {
+                const deleteBtn = card.querySelector('.delete-btn');
+                if (deleteBtn) {
+                    deleteBtn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        
+                        // Si estaba seleccionado, removerlo de la lista de seleccionados
+                        if (integrantesSeleccionados.includes(nombre)) {
+                            integrantesSeleccionados = integrantesSeleccionados.filter(i => i !== nombre);
+                            actualizarContador();
+                        }
+                        
+                        // Remover la tarjeta del DOM
+                        card.remove();
+                        mostrarExito('Miembro eliminado exitosamente');
+                    });
+                }
+            }
             
-            // Configurar evento del botón agregar
-            document.getElementById('btn-agregar-miembro').addEventListener('click', function() {
-                const nuevoIntegrante = document.getElementById('nuevo-integrante').value.trim();
-                
-                if (!nuevoIntegrante) {
-                    alert('Por favor ingresa el nombre del nuevo integrante');
+            grid.appendChild(card);
+        }
+
+        function actualizarContador() {
+            const contador = document.getElementById('selected-count');
+            contador.textContent = `${integrantesSeleccionados.length}/${maxIntegrantes}`;
+            
+            if (integrantesSeleccionados.length === maxIntegrantes) {
+                contador.style.background = 'var(--success)';
+            } else {
+                contador.style.background = 'var(--accent)';
+            }
+        }
+
+        function mostrarError(mensaje) {
+            const errorDiv = document.getElementById('error-message');
+            errorDiv.textContent = mensaje;
+            errorDiv.style.display = 'block';
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        function mostrarExito(mensaje) {
+            const successDiv = document.getElementById('success-message');
+            successDiv.textContent = mensaje;
+            successDiv.style.display = 'block';
+            setTimeout(() => {
+                successDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        // Agregar nuevo miembro
+        document.getElementById('btn-agregar-miembro').addEventListener('click', function() {
+            const input = document.getElementById('nuevo-integrante');
+            const nuevoIntegrante = input.value.trim();
+            
+            if (nuevoIntegrante) {
+                // Verificar si ya existe
+                const existente = document.querySelector(`input[value="${nuevoIntegrante}"]`);
+                if (existente) {
+                    mostrarError('Este miembro ya existe en la lista');
                     return;
                 }
                 
-                // Guardar en localStorage
-                const integrantesActuales = JSON.parse(localStorage.getItem('integrantesComite') || '[]');
-                if (!integrantesActuales.includes(nuevoIntegrante)) {
-                    integrantesActuales.push(nuevoIntegrante);
-                    localStorage.setItem('integrantesComite', JSON.stringify(integrantesActuales));
-                    
-                    // Agregar a la interfaz
-                    agregarIntegranteDOM(nuevoIntegrante);
-                    
-                    // Limpiar campo
-                    document.getElementById('nuevo-integrante').value = '';
-                } else {
-                    alert('Este integrante ya existe en la lista');
-                }
-            });
-            
-            // Función para agregar un integrante al DOM
-            function agregarIntegranteDOM(integrante) {
-                const container = document.getElementById('integrantes-container');
-                
-                const div = document.createElement('div');
-                div.innerHTML = `
-                    <input type="checkbox" name="integrantes" value="${integrante}"> 
-                    ${integrante}
-                    <button type="button" class="btn-eliminar">Eliminar</button>
-                `;
-                
-                // Configurar botón eliminar
-                const btnEliminar = div.querySelector('.btn-eliminar');
-                btnEliminar.addEventListener('click', function() {
-                    if (confirm('¿Estás seguro de eliminar este integrante?')) {
-                        // Eliminar del localStorage
-                        const integrantesActuales = JSON.parse(localStorage.getItem('integrantesComite') || '[]');
-                        const index = integrantesActuales.indexOf(integrante);
-                        if (index !== -1) {
-                            integrantesActuales.splice(index, 1);
-                            localStorage.setItem('integrantesComite', JSON.stringify(integrantesActuales));
-                        }
-                        
-                        // Eliminar del DOM
-                        div.remove();
-                    }
-                });
-                
-                container.appendChild(div);
+                crearTarjetaIntegrante(nuevoIntegrante, false); // false indica que se puede eliminar
+                input.value = '';
+                mostrarExito('Miembro agregado exitosamente');
+            } else {
+                mostrarError('Por favor ingresa un nombre válido');
+            }
+        });
+
+        // Validación del formulario
+        document.getElementById('generar-form').addEventListener('submit', function(e) {
+            if (integrantesSeleccionados.length !== maxIntegrantes) {
+                e.preventDefault();
+                mostrarError(`Debes seleccionar exactamente ${maxIntegrantes} integrantes del comité`);
+                return;
             }
             
-            // Guardar parámetros en localStorage cuando cambien
-            document.getElementById('titulo_proceso').addEventListener('change', guardarParametros);
-            // ELIMINAR ESTA LÍNEA porque no existe el elemento:
-            // document.getElementById('subtitulo_proceso').addEventListener('change', guardarParametros);
-            document.getElementById('codigo_siga').addEventListener('change', guardarParametros);
-            document.getElementById('nombre_cargo').addEventListener('change', guardarParametros);
-            document.getElementById('dependencia').addEventListener('change', guardarParametros);
+            // Mostrar loading
+            document.getElementById('loading').style.display = 'flex';
+            
+            // Simular proceso (remover en producción)
+            setTimeout(() => {
+                document.getElementById('loading').style.display = 'none';
+                mostrarExito('PDF generado exitosamente');
+            }, 2000);
+        });
 
-            function guardarParametros() {
-                const parametros = {
-                    titulo_proceso: document.getElementById('titulo_proceso').value,
-                    // ELIMINAR ESTA LÍNEA:
-                    // subtitulo_proceso: document.getElementById('subtitulo_proceso').value,
-                    codigo_siga: document.getElementById('codigo_siga').value,
-                    nombre_cargo: document.getElementById('nombre_cargo').value,
-                    dependencia: document.getElementById('dependencia').value
-                };
-                
-                localStorage.setItem('parametrosProceso', JSON.stringify(parametros));
+        // Permitir agregar miembro con Enter
+        document.getElementById('nuevo-integrante').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                document.getElementById('btn-agregar-miembro').click();
             }
+        });
 
-            function cargarParametrosGuardados() {
-                const parametros = JSON.parse(localStorage.getItem('parametrosProceso') || '{}');
-                
-                if (parametros.titulo_proceso) {
-                    document.getElementById('titulo_proceso').value = parametros.titulo_proceso;
-                }
-                // ELIMINAR ESTAS LÍNEAS:
-                // if (parametros.subtitulo_proceso) {
-                //     document.getElementById('subtitulo_proceso').value = parametros.subtitulo_proceso;
-                // }
-                if (parametros.codigo_siga) {
-                    document.getElementById('codigo_siga').value = parametros.codigo_siga;
-                }
-                if (parametros.nombre_cargo) {
-                    document.getElementById('nombre_cargo').value = parametros.nombre_cargo;
-                }
-                if (parametros.dependencia) {
-                    document.getElementById('dependencia').value = parametros.dependencia;
-                }
-            }
-
-            // Interceptar el envío del formulario para abrir en nueva pestaña
-            document.getElementById('generar-form').addEventListener('submit', function(event) {
-                event.preventDefault(); // Evitar el envío normal del formulario
-
-                const form = this;
-                const formData = new FormData(form);
-
-                // Guardar los parámetros al enviar
-                guardarParametros();
-
-                // Crear un nuevo formulario y configurarlo para POST y target _blank
-                const newForm = document.createElement('form');
-                newForm.method = 'post';
-                newForm.action = form.action;  // Usa la misma acción del formulario original
-                newForm.target = '_blank';    // Abre en una nueva pestaña
-
-                // Agregar los campos del formulario original al nuevo formulario
-                formData.forEach((value, key) => {
-                    const input = document.createElement('input');
-                    input.type = 'hidden';  // Campo oculto
-                    input.name = key;
-                    input.value = value;
-                    newForm.appendChild(input);
-                });
-
-                // Agregar el nuevo formulario al DOM y enviarlo
-                document.body.appendChild(newForm);
-                newForm.submit();
-                document.body.removeChild(newForm); // Limpiar el formulario después de enviarlo
-            });
+        // Inicializar la aplicación
+        document.addEventListener('DOMContentLoaded', function() {
+            inicializarIntegrantes();
+            actualizarContador();
         });
     </script>
 </body>
