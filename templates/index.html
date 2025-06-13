@@ -181,6 +181,39 @@
             color: var(--accent);
         }
 
+        /* Estilos específicos para campos de fecha */
+        .date-group {
+            display: grid;
+            grid-template-columns: 2fr 2fr 3fr;
+            gap: 1rem;
+            align-items: end;
+        }
+
+        .date-field {
+            position: relative;
+        }
+
+        .date-field label {
+            font-size: 0.85rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .date-field input {
+            padding: 0.75rem 0.5rem;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .date-field input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        .date-field input[type="number"]::-webkit-outer-spin-button,
+        .date-field input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
         .members-section {
             background: var(--gray-50);
             padding: 2rem;
@@ -385,6 +418,11 @@
                 grid-template-columns: 1fr;
             }
 
+            .date-group {
+                grid-template-columns: 1fr 1fr 2fr;
+                gap: 0.5rem;
+            }
+
             .members-grid {
                 grid-template-columns: 1fr;
             }
@@ -461,7 +499,8 @@
                         <div class="form-group">
                             <label for="titulo_proceso">Título Completo del Proceso</label>
                             <div class="input-wrapper">
-                                <input type="text" id="titulo_proceso" name="titulo_proceso" required>
+                                <input type="text" id="titulo_proceso" name="titulo_proceso" 
+                                       value="PROCESO SELECCIÓN PERSONAL SUPLENCIA N° 002-2025-LORETO BAJO LOS ALCANCES DEL DECRETO LEGISLATIVO N° 728 DETERMINADO BAJO LA MODALIDAD DE SUPLENCIA" required>
                                 <i class="fas fa-heading input-icon"></i>
                             </div>
                         </div>
@@ -469,7 +508,7 @@
                         <div class="form-group">
                             <label for="codigo_siga">Código de puesto (SIGA)</label>
                             <div class="input-wrapper">
-                                <input type="text" id="codigo_siga" name="codigo_siga" required>
+                                <input type="text" id="codigo_siga" name="codigo_siga" value="00415" required>
                                 <i class="fas fa-barcode input-icon"></i>
                             </div>
                         </div>
@@ -477,7 +516,7 @@
                         <div class="form-group">
                             <label for="nombre_cargo">Nombre de la Posición o Cargo</label>
                             <div class="input-wrapper">
-                                <input type="text" id="nombre_cargo" name="nombre_cargo" required>
+                                <input type="text" id="nombre_cargo" name="nombre_cargo" value="Asistente jurisdiccional" required>
                                 <i class="fas fa-briefcase input-icon"></i>
                             </div>
                         </div>
@@ -485,7 +524,7 @@
                         <div class="form-group">
                             <label for="dependencia">Dependencia</label>
                             <div class="input-wrapper">
-                                <input type="text" id="dependencia" name="dependencia" required>
+                                <input type="text" id="dependencia" name="dependencia" value="Módulo Penal Central" required>
                                 <i class="fas fa-building input-icon"></i>
                             </div>
                         </div>
@@ -495,6 +534,25 @@
                             <div class="input-wrapper">
                                 <input type="text" id="nombre_postulante" name="nombre_postulante" required>
                                 <i class="fas fa-user input-icon"></i>
+                            </div>
+                        </div>
+
+                        <!-- Sección de fecha personalizable -->
+                        <div class="form-group">
+                            <label>Fecha</label>
+                            <div class="date-group">
+                                <div class="date-field">
+                                    <label for="dia">Día</label>
+                                    <input type="number" id="dia" name="dia" min="1" max="31" required placeholder="DD">
+                                </div>
+                                <div class="date-field">
+                                    <label for="mes">Mes</label>
+                                    <input type="number" id="mes" name="mes" min="1" max="12" required placeholder="MM">
+                                </div>
+                                <div class="date-field">
+                                    <label for="año">Año</label>
+                                    <input type="number" id="año" name="año" min="2020" max="2030" required placeholder="AAAA">
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -539,11 +597,11 @@
     <script>
         // Datos de ejemplo para los integrantes (reemplaza con tus datos reales)
         const integrantesIniciales = [
-    "Abg. Andrea del Pilar Chuquipiondo Sánchez",
-    "Lic. Adm. Gilda Eloisa Hidalgo Chávez",
-    "Lic. Adm. Rosa Elena Pérez de Mori",
-    "Presidente. Reynaldo Elías Cajamarca Porras"
-];
+            "Abg. Andrea del Pilar Chuquipiondo Sánchez",
+            "Lic. Adm. Gilda Eloisa Hidalgo Chávez",
+            "Lic. Adm. Rosa Elena Pérez de Mori",
+            "Presidente. Reynaldo Elías Cajamarca Porras"
+        ];
 
         let integrantesSeleccionados = [];
         const maxIntegrantes = 3;
@@ -645,6 +703,27 @@
             }, 3000);
         }
 
+        // Validación específica para campos de fecha
+        function validarFecha() {
+            const dia = parseInt(document.getElementById('dia').value);
+            const mes = parseInt(document.getElementById('mes').value);
+            const año = parseInt(document.getElementById('año').value);
+
+            if (!dia || !mes || !año) {
+                mostrarError('Todos los campos de fecha son obligatorios');
+                return false;
+            }
+
+            // Validación básica de fecha
+            const fecha = new Date(año, mes - 1, dia);
+            if (fecha.getFullYear() !== año || fecha.getMonth() !== (mes - 1) || fecha.getDate() !== dia) {
+                mostrarError('La fecha ingresada no es válida');
+                return false;
+            }
+
+            return true;
+        }
+
         // Agregar nuevo miembro
         document.getElementById('btn-agregar-miembro').addEventListener('click', function() {
             const input = document.getElementById('nuevo-integrante');
@@ -668,6 +747,11 @@
 
         // Validación del formulario
         document.getElementById('generar-form').addEventListener('submit', function(e) {
+            if (!validarFecha()) {
+                e.preventDefault();
+                return;
+            }
+
             if (integrantesSeleccionados.length !== maxIntegrantes) {
                 e.preventDefault();
                 mostrarError(`Debes seleccionar exactamente ${maxIntegrantes} integrantes del comité`);
@@ -677,11 +761,20 @@
             // Mostrar loading
             document.getElementById('loading').style.display = 'flex';
             
-            // Simular proceso (remover en producción)
+            // Ocultar loading después de un tiempo (para mejor UX)
             setTimeout(() => {
                 document.getElementById('loading').style.display = 'none';
                 mostrarExito('PDF generado exitosamente');
             }, 2000);
+        });
+
+        // Inicializar formulario al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            // CAMBIO PRINCIPAL: NO AUTO-LLENAR EL AÑO
+            // El usuario debe ingresar la fecha que desee
+            
+            inicializarIntegrantes();
+            actualizarContador();
         });
 
         // Permitir agregar miembro con Enter
@@ -692,10 +785,20 @@
             }
         });
 
-        // Inicializar la aplicación
-        document.addEventListener('DOMContentLoaded', function() {
-            inicializarIntegrantes();
-            actualizarContador();
+        // Validación en tiempo real para campos numéricos
+        ['dia', 'mes', 'año'].forEach(id => {
+            document.getElementById(id).addEventListener('input', function() {
+                const valor = parseInt(this.value);
+                if (id === 'dia' && (valor < 1 || valor > 31)) {
+                    this.style.borderColor = 'var(--danger)';
+                } else if (id === 'mes' && (valor < 1 || valor > 12)) {
+                    this.style.borderColor = 'var(--danger)';
+                } else if (id === 'año' && (valor < 2020 || valor > 2030)) {
+                    this.style.borderColor = 'var(--danger)';
+                } else {
+                    this.style.borderColor = 'var(--gray-200)';
+                }
+            });
         });
     </script>
 </body>

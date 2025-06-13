@@ -1,3 +1,4 @@
+"""generar_pdf.py"""
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter, A4
 from reportlab.lib.units import mm, inch
@@ -8,12 +9,14 @@ from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_JUSTIFY
 from textwrap import wrap
 import tempfile
 import os
+from datetime import datetime
 
 def generar_documento(
     nombre_postulante, 
     datos_integrantes,
     titulo_proceso="PROCESO SELECCIÓN PERSONAL SUPLENCIA N° 002-2025-LORETO\nBAJO LOS ALCANCES DEL DECRETO LEGISLATIVO N° 728 DETERMINADO BAJO LA MODALIDAD DE SUPLENCIA",
-    dependencia="Módulo Penal Central"
+    dependencia="Módulo Penal Central",
+    fecha_proceso=None  # NUEVO PARÁMETRO PARA LA FECHA
 ):
     """
     Genera un documento PDF profesional para evaluación de entrevistas.
@@ -23,6 +26,7 @@ def generar_documento(
         datos_integrantes (list): Lista de diccionarios con datos de integrantes
         titulo_proceso (str): Título del proceso de selección
         dependencia (str): Nombre de la dependencia
+        fecha_proceso (str): Fecha del proceso en formato legible
     
     Returns:
         str: Ruta del archivo PDF generado
@@ -30,6 +34,15 @@ def generar_documento(
     temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
     c = canvas.Canvas(temp_file.name, pagesize=letter)
     width, height = letter
+    
+    # Si no se proporciona fecha, usar la fecha actual
+    if fecha_proceso is None:
+        hoy = datetime.now()
+        meses = [
+            "", "enero", "febrero", "marzo", "abril", "mayo", "junio",
+            "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
+        ]
+        fecha_proceso = f"{hoy.day} de {meses[hoy.month]} de {hoy.year}"
     
     # Configuración de fuentes y estilos mejorados
     fonts = {
@@ -120,7 +133,7 @@ def generar_documento(
         return lines
     
     def draw_details(canvas, y_start, codigo_siga, cargo, nombre_postulante, integrante):
-        """Dibuja los detalles del proceso con mejor formato"""
+        """Dibuja los detalles del proceso con mejor formato incluyendo la fecha"""
         c.setFont(*fonts['body'])
         
         details = [
@@ -138,9 +151,9 @@ def generar_documento(
             c.drawString(margin_left, y_pos, detail)
             y_pos -= 15
             
-        # Campos de fecha y hora con mejor espaciado
+        # MODIFICACIÓN: Mostrar la fecha del proceso y campo de hora
         y_pos -= 10
-        c.drawString(margin_left, y_pos, "Fecha: ___________________")
+        c.drawString(margin_left, y_pos, f"Fecha: {fecha_proceso}")
         c.drawString(margin_left + 280, y_pos, "Hora de inicio entrevista: ___________________")
         
         return y_pos - 50
@@ -273,7 +286,8 @@ def test_generar_documento():
     
     archivo_pdf = generar_documento(
         nombre_postulante="Ana María Rodríguez Vásquez",
-        datos_integrantes=datos_test
+        datos_integrantes=datos_test,
+        fecha_proceso="15 de junio de 2025"  # Ejemplo de fecha
     )
     
     print(f"PDF generado exitosamente: {archivo_pdf}")

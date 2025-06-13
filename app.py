@@ -1,7 +1,9 @@
+"""app.py"""
 from flask import Flask, request, send_file, render_template, abort, redirect, url_for, session, make_response
 from generar_pdf import generar_documento
 import os
 import io
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = 'clave_secreta'  # Necesaria para usar session
@@ -51,6 +53,7 @@ def eliminar_integrante():
         session['integrantes_personalizados'] = integrantes
 
     return redirect(url_for('index'))
+
 @app.route("/generar_documento", methods=["POST"])
 def generar_documento_route():
     nombre_postulante = request.form.get("nombre_postulante")
@@ -60,9 +63,45 @@ def generar_documento_route():
     titulo_proceso = request.form.get("titulo_proceso", "PROCESO SELECCIÓN PERSONAL SUPLENCIA N° 002-2025-LORETO BAJO LOS ALCANCES DEL DECRETO LEGISLATIVO N° 728 DETERMINADO BAJO LA MODALIDAD DE SUPLENCIA")
     dependencia = request.form.get("dependencia", "Módulo Penal Central")
     
-    # AQUÍ ESTÁ LA CORRECCIÓN: Capturar los valores globales del formulario
+    # Capturar los valores globales del formulario
     codigo_siga_global = request.form.get("codigo_siga", "00415")
     cargo_global = request.form.get("nombre_cargo", "Asistente jurisdiccional")
+    
+    # NUEVA FUNCIONALIDAD: Capturar y procesar la fecha
+    dia = request.form.get("dia")
+    mes = request.form.get("mes")
+    año = request.form.get("año")
+    
+    # Validar que todos los campos de fecha estén presentes
+    if not dia or not mes or not año:
+        abort(400, "Todos los campos de fecha son obligatorios")
+    
+    try:
+        # Convertir a enteros y validar
+        dia = int(dia)
+        mes = int(mes)
+        año = int(año)
+        
+        # Validar rangos básicos
+        if not (1 <= dia <= 31) or not (1 <= mes <= 12) or not (2020 <= año <= 2030):
+            abort(400, "Los valores de fecha están fuera del rango válido")
+        
+        # Validar que la fecha sea válida
+        try:
+            fecha_validacion = datetime(año, mes, dia)
+        except ValueError:
+            abort(400, "La fecha ingresada no es válida")
+        
+        # Formatear la fecha para el PDF
+        meses = [
+            "", "enero", "febrero", "marzo", "abril", "mayo", "junio",
+            "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
+        ]
+        
+        fecha_formateada = f"{dia} de {meses[mes]} de {año}"
+        
+    except (ValueError, TypeError):
+        abort(400, "Los valores de fecha deben ser números válidos")
     
     # Recopilar información adicional para cada integrante seleccionado
     integrantes_con_datos = []
@@ -78,12 +117,13 @@ def generar_documento_route():
         abort(400, "Debes completar todos los campos y seleccionar tres integrantes del comité.")
 
     try:
-        # Pasar los datos al generador de PDF
+        # Pasar los datos al generador de PDF incluyendo la fecha
         archivo_pdf = generar_documento(
             nombre_postulante,
             integrantes_con_datos,
             titulo_proceso,
-            dependencia
+            dependencia,
+            fecha_formateada  # Nuevo parámetro de fecha
         )
         
         # Leer el contenido del archivo PDF
@@ -107,5 +147,4 @@ def descargar_pdf():
     return send_file(pdf_path, mimetype='application/pdf')
 
 if __name__ == '__main__':
-    app.run(debug=True)
-    
+    app.run(debug=True) 
